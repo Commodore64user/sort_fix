@@ -387,7 +387,7 @@ local footerTextGeneratorMap = {
             end
         end
     end,
-    page_turners_inverted = function(footer)
+    page_turning_inverted = function(footer)
         local symbol_type = footer.settings.item_prefix
         if symbol_type == "icons" or symbol_type == "compact_items" then
             if G_reader_settings:isTrue("input_invert_page_turn_keys") or
@@ -1035,7 +1035,7 @@ function ReaderFooter:textOptionTitles(option)
         frontlight_warmth = T(_("Warmth level (%1)"), symbol_prefix[symbol].frontlight_warmth),
         mem_usage = T(_("KOReader memory usage (%1)"), symbol_prefix[symbol].mem_usage),
         wifi_status = T(_("Wi-Fi status (%1)"), symbol_prefix[symbol].wifi_status),
-        page_turning_inverted = T(_("Page turning inverted (%1)"), symbol_prefix[symbol].page_turners_inverted),
+        page_turning_inverted = T(_("Page turning inverted (%1)"), symbol_prefix[symbol].page_turning_inverted),
         book_author = _("Book author"),
         book_title = _("Book title"),
         book_chapter = _("Chapter title"),
