@@ -50,6 +50,7 @@ local MODE = {
     frontlight_warmth = 16,
     custom_text = 17,
     book_author = 18,
+    page_turners_inverted = 19,
 }
 
 local symbol_prefix = {
@@ -75,6 +76,8 @@ local symbol_prefix = {
         mem_usage = C_("FooterLetterPrefix", "M:"),
         -- @translators This is the footer letter prefix for Wi-Fi status.
         wifi_status = C_("FooterLetterPrefix", "W:"),
+        -- @translators This is the footer letter prefix for the page turn button status.
+        page_turners_inverted = C_("FooterLetterPrefix", "PgT:"),
         -- no prefix for custom text
         custom_text = "",
     },
@@ -93,6 +96,7 @@ local symbol_prefix = {
         wifi_status = "",
         wifi_status_off = "",
         custom_text = "",
+        page_turners_inverted = "⇄",
     },
     compact_items = {
         time = nil,
@@ -110,6 +114,7 @@ local symbol_prefix = {
         wifi_status = "",
         wifi_status_off = "",
         custom_text = "",
+        page_turners_inverted = "⇄",
     }
 }
 if BD.mirroredUILayout() then
@@ -380,6 +385,30 @@ local footerTextGeneratorMap = {
             end
         end
     end,
+    page_turners_inverted = function(footer)
+        local symbol_type = footer.settings.item_prefix
+        if symbol_type == "icons" or symbol_type == "compact_items" then
+            if G_reader_settings:isTrue("input_invert_page_turn_keys") or
+               G_reader_settings:isTrue("input_invert_left_page_turn_keys") or
+               G_reader_settings:isTrue("input_invert_right_page_turn_keys") then
+                return symbol_prefix.icons.page_turners_inverted
+            else
+                -- Do not show a symbol when page turn buttons are not inverted
+                return ""
+            end
+        else
+            local prefix = symbol_prefix[symbol_type].page_turners_inverted
+            if G_reader_settings:isTrue("input_invert_page_turn_keys") or
+               G_reader_settings:isTrue("input_invert_left_page_turn_keys") or
+               G_reader_settings:isTrue("input_invert_right_page_turn_keys") then
+                return T(_("%1 On"), prefix)
+            elseif footer.settings.all_at_once and footer.settings.hide_empty_generators then
+                return ""
+            else
+                return T(_("%1 Off"), prefix)
+            end
+        end
+    end,
     book_author = function(footer)
         local author = footer.ui.doc_props.authors
         if author and author ~= "" then
@@ -480,6 +509,7 @@ ReaderFooter.default_settings = {
     frontlight = false,
     mem_usage = false,
     wifi_status = false,
+    page_turners_inverted = false,
     book_author = false,
     book_title = false,
     book_chapter = false,
@@ -530,6 +560,9 @@ function ReaderFooter:init()
     end
     if not Device:hasNaturalLight() then
         MODE.frontlight_warmth = nil
+    end
+    if not Device:hasKeys() then
+        MODE.page_turners_inverted = nil
     end
 
     -- self.mode_index will be an array of MODE names, with an additional element
@@ -1000,6 +1033,7 @@ function ReaderFooter:textOptionTitles(option)
         frontlight_warmth = T(_("Warmth level (%1)"), symbol_prefix[symbol].frontlight_warmth),
         mem_usage = T(_("KOReader memory usage (%1)"), symbol_prefix[symbol].mem_usage),
         wifi_status = T(_("Wi-Fi status (%1)"), symbol_prefix[symbol].wifi_status),
+        page_turners_inverted = T(_("Page-turn buttons inverted (%1)"), symbol_prefix[symbol].page_turners_inverted),
         book_author = _("Book author"),
         book_title = _("Book title"),
         book_chapter = _("Chapter title"),
@@ -1428,6 +1462,9 @@ function ReaderFooter:addToMainMenu(menu_items)
     table.insert(footer_items, getMinibarOption("mem_usage"))
     if Device:hasFastWifiStatusQuery() then
         table.insert(footer_items, getMinibarOption("wifi_status"))
+    end
+    if Device:hasKeys() then
+        table.insert(footer_items, getMinibarOption("page_turners_inverted"))
     end
     table.insert(footer_items, getMinibarOption("book_author"))
     table.insert(footer_items, getMinibarOption("book_title"))
