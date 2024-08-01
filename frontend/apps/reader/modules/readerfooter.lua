@@ -50,7 +50,7 @@ local MODE = {
     frontlight_warmth = 16,
     custom_text = 17,
     book_author = 18,
-    page_turning_inverted = 19,
+    page_turning_inverted = 19, -- includes both page-turn-button and swipe-and-tap inversion
 }
 
 local symbol_prefix = {
@@ -76,7 +76,7 @@ local symbol_prefix = {
         mem_usage = C_("FooterLetterPrefix", "M:"),
         -- @translators This is the footer letter prefix for Wi-Fi status.
         wifi_status = C_("FooterLetterPrefix", "W:"),
-        -- @translators This is the footer letter prefix for the page turn button status.
+        -- @translators This is the footer letter prefix for page turning status.
         page_turning_inverted = C_("FooterLetterPrefix", "PgT:"),
         -- no prefix for custom text
         custom_text = "",
@@ -389,26 +389,19 @@ local footerTextGeneratorMap = {
     end,
     page_turning_inverted = function(footer)
         local symbol_type = footer.settings.item_prefix
-        if symbol_type == "icons" or symbol_type == "compact_items" then
-            if G_reader_settings:isTrue("input_invert_page_turn_keys") or
-               G_reader_settings:isTrue("input_invert_left_page_turn_keys") or
-               G_reader_settings:isTrue("input_invert_right_page_turn_keys") or
-               G_reader_settings:isTrue("inverse_reading_order") then
+        local prefix = symbol_prefix[symbol_type].page_turning_inverted
+        if G_reader_settings:isTrue("input_invert_page_turn_keys") or G_reader_settings:isTrue("input_invert_left_page_turn_keys") or
+           G_reader_settings:isTrue("input_invert_right_page_turn_keys") or G_reader_settings:isTrue("inverse_reading_order") then
+            if symbol_type == "icons" or symbol_type == "compact_items" then
                 return symbol_prefix.icons.page_turning_inverted
-            elseif footer.settings.all_at_once and footer.settings.hide_empty_generators then
-                return ""
             else
-                return symbol_prefix.icons.page_turning_regular
-            end
-        else
-            local prefix = symbol_prefix[symbol_type].page_turning_inverted
-            if G_reader_settings:isTrue("input_invert_page_turn_keys") or
-               G_reader_settings:isTrue("input_invert_left_page_turn_keys") or
-               G_reader_settings:isTrue("input_invert_right_page_turn_keys") or
-               G_reader_settings:isTrue("inverse_reading_order") then
                 return T(_("%1 On"), prefix)
-            elseif footer.settings.all_at_once and footer.settings.hide_empty_generators then
-                return ""
+            end
+        elseif footer.settings.all_at_once and footer.settings.hide_empty_generators then
+            return ""
+        else
+            if symbol_type == "icons" or symbol_type == "compact_items" then
+                return symbol_prefix.icons.page_turning_regular
             else
                 return T(_("%1 Off"), prefix)
             end
