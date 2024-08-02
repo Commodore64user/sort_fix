@@ -76,8 +76,6 @@ local symbol_prefix = {
         mem_usage = C_("FooterLetterPrefix", "M:"),
         -- @translators This is the footer letter prefix for Wi-Fi status.
         wifi_status = C_("FooterLetterPrefix", "W:"),
-        -- @translators This is the footer letter prefix for page turning status.
-        page_turning_inverted = C_("FooterLetterPrefix", "Pg:"),
         -- no prefix for custom text
         custom_text = "",
     },
@@ -96,8 +94,6 @@ local symbol_prefix = {
         wifi_status = "",
         wifi_status_off = "",
         custom_text = "",
-        page_turning_inverted = "PgT:I",
-        page_turning_regular = "PgT",
     },
     compact_items = {
         time = nil,
@@ -115,8 +111,6 @@ local symbol_prefix = {
         wifi_status = "",
         wifi_status_off = "",
         custom_text = "",
-        page_turning_inverted = "PgT:I",
-        page_turning_regular = "PgT",
     }
 }
 if BD.mirroredUILayout() then
